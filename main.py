@@ -21,7 +21,7 @@ def get_filelist():
 
 # cycles through a list (of filenames) and displays the next one
 # if next is set to False, it'll show the previous image, else it'll show the next image
-def cycle_image(dt,next=True):
+def cycle_image(next=True):
 	global i
 	global filelist
 	
@@ -50,6 +50,12 @@ def cycle_image(dt,next=True):
 	sprite.y = window.height//2
 	
 	window.clear()
+
+# checks if the slideshow is paused and if not calls cycle_image() to show a new image
+def next_image(dt, next=True):
+	global pause
+	if not pause:
+		cycle_image(next)
 	
 # updates and randomizes the list
 def update_filelist(dt):
@@ -66,6 +72,7 @@ def get_scale(window, image):
 # ============== GLOBVARS ==============
 i = 0
 filelist = get_filelist()
+pause = False
 	
 # ============== MAIN ==============
 # window = pyglet.window.Window(fullscreen=True)
@@ -79,13 +86,17 @@ window.set_icon(icon_16,icon_32)
 def on_draw():
 	sprite.draw()
 	time_label.draw()
-	
+
+# left and right button to show the next and previous image; middle mouse button to pause/resume the slideshow	
 @window.event
 def on_mouse_release(x, y, button, modifiers):
+	global pause
 	if button == pyglet.window.mouse.LEFT:
 		cycle_image(0, True)
 	elif button == pyglet.window.mouse.RIGHT:
 		cycle_image(0, False)
+	elif button == pyglet.window.mouse.MIDDLE:
+		pause = not pause
 		
 		
 if __name__ == '__main__':
@@ -109,7 +120,7 @@ if __name__ == '__main__':
 	time_label = pyglet.text.Label(time.strftime("%H:%M"), font_name='Segoe UI', font_size=48, x=window.width*0.98, y=window.height*0.03, anchor_x='right', anchor_y='baseline')
 	
 	# cycle the images and update the list of files periodically
-	main_clock.schedule_interval(cycle_image, CYCLE_IMAGE_INTERVALL, True)
+	main_clock.schedule_interval(next_image, CYCLE_IMAGE_INTERVALL, True)
 	main_clock.schedule_interval(update_filelist, UPDATE_FILELIST_INTERVALL)
 	main_clock.schedule_interval(update_time, 30.0)
 	
