@@ -1,13 +1,18 @@
 import random
 import os
 import pyglet
+import time
 
 # ============== CONFIG ==============
-CYCLE_IMAGE_INTERVALL = 15.0
+CYCLE_IMAGE_INTERVALL = 5.0
 UPDATE_FILELIST_INTERVALL = 3600.0
 
 # ============== FUNCTIONS ==============
 
+# updates the time label to the current localtime
+def update_time(dt):
+	time_label.text = time.strftime("%H:%M")
+	
 # generates a list containing all filenames (strings) in ./img/
 def get_filelist():
 	img_path = os.path.join(os.path.dirname(__file__), "img/")
@@ -54,19 +59,17 @@ def update_filelist(dt):
 	
 # scales the image to cover the whole window
 def get_scale(window, image):
-	if window.width > window.height:
-		scale = float(window.width) / image.width
-	else:
-		scale = float(window.height) / image.height
+	scale = max(float(window.width) / image.width, float(window.height) / image.height)
 	return scale
-
+	
+	
 # ============== GLOBVARS ==============
 i = 0
 filelist = get_filelist()
 	
 # ============== MAIN ==============
 # window = pyglet.window.Window(fullscreen=True)
-window = pyglet.window.Window(640, 640)
+window = pyglet.window.Window(1024, 600)
 window.set_caption('Slideshow')
 icon_16 = pyglet.image.load('icon_16.png')
 icon_32 = pyglet.image.load('icon_32.png')
@@ -75,9 +78,10 @@ window.set_icon(icon_16,icon_32)
 @window.event
 def on_draw():
 	sprite.draw()
-
+	time_label.draw()
+	
 @window.event
-def on_mouse_press(x, y, button, modifiers):
+def on_mouse_release(x, y, button, modifiers):
 	if button == pyglet.window.mouse.LEFT:
 		cycle_image(0, True)
 	elif button == pyglet.window.mouse.RIGHT:
@@ -98,13 +102,15 @@ if __name__ == '__main__':
 	sprite.x = window.width//2
 	sprite.y = window.height//2
 	
-	
 	# lower the clocks fps_limit to save resources
 	main_clock = pyglet.clock
 	main_clock.set_fps_limit(30)
 	
+	time_label = pyglet.text.Label(time.strftime("%H:%M"), font_name='Segoe UI', font_size=48, x=window.width*0.98, y=window.height*0.03, anchor_x='right', anchor_y='baseline')
+	
 	# cycle the images and update the list of files periodically
 	main_clock.schedule_interval(cycle_image, CYCLE_IMAGE_INTERVALL, True)
 	main_clock.schedule_interval(update_filelist, UPDATE_FILELIST_INTERVALL)
+	main_clock.schedule_interval(update_time, 30.0)
 	
 	pyglet.app.run()
