@@ -92,9 +92,7 @@ def on_draw():
 def on_mouse_release(x, y, button, modifiers):
 	global pause
 	if button == pyglet.window.mouse.LEFT:
-		cycle_image(0, True)
 	elif button == pyglet.window.mouse.RIGHT:
-		cycle_image(0, False)
 	elif button == pyglet.window.mouse.MIDDLE:
 		pause = not pause
 		
