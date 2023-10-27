@@ -92,7 +92,9 @@ def on_draw():
 def on_mouse_release(x, y, button, modifiers):
 	global pause
 	if button == pyglet.window.mouse.LEFT:
+		cycle_image()
 	elif button == pyglet.window.mouse.RIGHT:
+		cycle_image(False)
 	elif button == pyglet.window.mouse.MIDDLE:
 		pause = not pause
 		
@@ -113,7 +115,7 @@ if __name__ == '__main__':
 	
 	# lower the clocks fps_limit to save resources
 	main_clock = pyglet.clock
-	main_clock.set_fps_limit(30)
+	# main_clock.set_fps_limit(30) #deprecated
 	
 	time_label = pyglet.text.Label(time.strftime("%H:%M"), font_name='Segoe UI', font_size=48, x=window.width*0.98, y=window.height*0.03, anchor_x='right', anchor_y='baseline')
 	
